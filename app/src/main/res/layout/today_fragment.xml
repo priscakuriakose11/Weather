@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/weatherappbackground"
+    android:background="#6FBADF"
     tools:context=".ui.TodayFragment">
 
     <LinearLayout
@@ -12,9 +12,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:backgroundTint="@color/cardview_light_background"
+        android:background="@color/purple_200"
+        android:backgroundTint="#1E88E5"
         android:orientation="horizontal"
         android:weightSum="5"
+        app:layout_constraintBottom_toTopOf="@id/dateTime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -27,7 +29,9 @@
             android:layout_marginTop="16dp"
             android:layout_weight="3.7"
             android:hint="@string/enter_city"
+            android:text="kochi"
             android:textSize="20sp" />
+
 
         <ImageView
             android:id="@+id/favorite"
@@ -65,6 +69,7 @@
         android:paddingTop="16dp"
         android:text="28/10/2021,09.44 AM"
         android:textSize="23sp"
+        app:layout_constraintBottom_toTopOf="@+id/highLow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolBar" />
 
@@ -75,6 +80,7 @@
         android:layout_marginStart="10dp"
         android:orientation="horizontal"
         android:paddingTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/temperature"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dateTime">
 
@@ -117,7 +123,8 @@
         android:layout_marginStart="10dp"
         android:paddingTop="16dp"
         android:text="32 deg"
-        android:textSize="40sp"
+        android:textSize="70sp"
+        app:layout_constraintBottom_toTopOf="@+id/iconText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/highLow" />
 
@@ -127,18 +134,23 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:paddingTop="16dp"
-        android:paddingRight="50dp"
+
         android:text="Cloudy"
         android:textSize="40sp"
         app:layout_constraintBottom_toTopOf="@+id/icon"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/temperature" />
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="239dp"
-        android:layout_height="358dp"
-        android:paddingBottom="200dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:paddingBottom="50dp"
         android:src="@drawable/ic_baseline_cloud_circle_24"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iconText" />
 </androidx.constraintlayout.widget.ConstraintLayout>

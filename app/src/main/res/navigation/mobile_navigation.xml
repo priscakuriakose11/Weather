@@ -15,7 +15,9 @@
         android:id="@+id/navigation_dashboard"
         android:name="com.example.weather.ui.ForecastFragment"
         android:label="@string/weatherForecast"
-        tools:layout="@layout/forecast_fragment" />
+        tools:layout="@layout/forecast_fragment" >
+
+    </fragment>
 
 
 <fragment

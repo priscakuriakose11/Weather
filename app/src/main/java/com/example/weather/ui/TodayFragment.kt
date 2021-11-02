@@ -1,5 +1,9 @@
 package com.example.weather.ui
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.Location
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.os.Parcel
@@ -10,11 +14,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.weather.R
 import com.example.weather.databinding.TodayFragmentBinding
+import com.example.weathersampleapp.data.utils.Constants.Companion.TEXT_CONTENTS
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.Task
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -25,30 +33,78 @@ class TodayFragment() : Fragment() {
     private val viewModel: TodayViewModel by activityViewModels()
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
+    lateinit var geocoder: Geocoder
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = TodayFragmentBinding.inflate(inflater, container, false)
+        fusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-
+        val sdf = SimpleDateFormat("d MMMM, hh:mm a", Locale.getDefault())
+        val date = sdf.format(Date()).toString()
+        binding.dateTime.text = date
         viewModel.unitsLiveData.observe(viewLifecycleOwner)
         { unitsLiveData ->
             val unit = unitsLiveData
-            binding.location.setOnClickListener {
 
+
+            fetchlocation(unit)
+
+
+            binding.location.setOnClickListener {
+                fetchlocation(unit)
             }
-            getToday(binding.enterCity.text.toString(), unit)
+
+            //getToday(binding.enterCity.text.toString(), unit)
             binding.go.setOnClickListener {
                 getToday(binding.enterCity.text.toString(), unit)
                 var oldCity = binding.enterCity.text.toString()
             }
         }
+    }
+
+    private fun fetchlocation(unit: String) {
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        val task: Task<Location> = fusedLocationProviderClient.lastLocation
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                101
+            )
+            return
+        }
+        task.addOnSuccessListener {
+            if (it != null) {
+                Log.d("lat", "${it.latitude}")
+                Log.d("lon", "${it.longitude}")
+                var address = geocoder.getFromLocation(it.latitude, it.longitude, 1)
+                var city = address.get(0).getAdminArea()
+                Log.d("city", "$city")
+                Toast.makeText(requireContext(), "Current Location : $city", Toast.LENGTH_LONG)
+                    .show()
+                getToday(city, unit)
+
+            }
+        }
+
+
     }
 
 
@@ -72,9 +128,7 @@ class TodayFragment() : Fragment() {
             binding.temperature.text = main?.temp.toString()
             binding.highTemperature.text = main?.tempMax.toString()
             binding.lowTemperature.text = main?.tempMin.toString()
-            val sdf = SimpleDateFormat("d MMMM, hh:mm a", Locale.getDefault())
-            val date = sdf.format(Date()).toString()
-            binding.dateTime.text = date
+
             val WeatherItem = response?.weather?.get(0)
             binding.iconText.text = WeatherItem?.description
             val iconid = WeatherItem?.icon

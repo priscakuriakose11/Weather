@@ -53,7 +53,7 @@ class ForecastFragment : Fragment() {
         }
 
 
-        // viewModel.forecastWeatherLiveData.observe()
+
     }
 
     private fun initViewModel(view: View) {

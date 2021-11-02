@@ -1,10 +1,13 @@
 package com.example.weather.ui
 
+import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weather.R
@@ -28,6 +31,7 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.MyViewHolder>() {
         val lowtemperatureForecast = view.findViewById<TextView>(R.id.lowTemperatureForecast)
         val dateTimeForecast = view.findViewById<TextView>(R.id.dateTimeForecast)
         val iconForecast = view.findViewById<ImageView>(R.id.iconForecast)
+        @RequiresApi(Build.VERSION_CODES.O)
         fun bind(data: DailyItem) {
             val temp = data.temp
             // temperatureForecast.text=temp?.day.toString()
@@ -42,13 +46,26 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.MyViewHolder>() {
                 .into(iconForecast)
 
 
-            val dt = data.dt
-            val sdf = SimpleDateFormat("d EEEE, hh:mm a", Locale.getDefault())
-            var date = sdf.format(dt?.times(1000)!!)
-            dateTimeForecast.text = date.toString()
+            val dt  = data.dt
+            Log.d("date","$dt")
+           val sdf = SimpleDateFormat("EE, dd MMMM")
+           //var date = sdf.format(dt?.times(1000))
+            if (dt != null) {
+                val date  = java.time.format.DateTimeFormatter.ISO_INSTANT
+                    .format(java.time.Instant.ofEpochSecond(dt.toLong()))
+
+                val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                val formatter = SimpleDateFormat("EE , dd LLL ")
+                val output = formatter.format(parser.parse(date))
+                dateTimeForecast.text = output
+            }
+
+
 
 
         }
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {

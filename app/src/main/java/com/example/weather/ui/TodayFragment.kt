@@ -14,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.weather.R
 import com.example.weather.databinding.TodayFragmentBinding
+import com.google.android.gms.location.FusedLocationProviderClient
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -23,6 +24,7 @@ class TodayFragment() : Fragment() {
 
     private val viewModel: TodayViewModel by activityViewModels()
 
+    lateinit var fusedLocationProviderClient:FusedLocationProviderClient
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,8 +37,11 @@ class TodayFragment() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
 
-        getToday(binding.enterCity.text.toString())
 
+        binding.location.setOnClickListener{
+
+        }
+        getToday(binding.enterCity.text.toString())
         binding.go.setOnClickListener {
             getToday(binding.enterCity.text.toString())
             var oldCity = binding.enterCity.text.toString()

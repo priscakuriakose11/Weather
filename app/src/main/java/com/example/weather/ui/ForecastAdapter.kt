@@ -31,6 +31,7 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.MyViewHolder>() {
         val lowtemperatureForecast = view.findViewById<TextView>(R.id.lowTemperatureForecast)
         val dateTimeForecast = view.findViewById<TextView>(R.id.dateTimeForecast)
         val iconForecast = view.findViewById<ImageView>(R.id.iconForecast)
+
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(data: DailyItem) {
             val temp = data.temp
@@ -46,12 +47,11 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.MyViewHolder>() {
                 .into(iconForecast)
 
 
-            val dt  = data.dt
-            Log.d("date","$dt")
-           val sdf = SimpleDateFormat("EE, dd MMMM")
-           //var date = sdf.format(dt?.times(1000))
+            val dt = data.dt
+            val sdf = SimpleDateFormat("EE, dd MMMM")
+            //var date = sdf.format(dt?.times(1000))
             if (dt != null) {
-                val date  = java.time.format.DateTimeFormatter.ISO_INSTANT
+                val date = java.time.format.DateTimeFormatter.ISO_INSTANT
                     .format(java.time.Instant.ofEpochSecond(dt.toLong()))
 
                 val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
@@ -59,8 +59,6 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.MyViewHolder>() {
                 val output = formatter.format(parser.parse(date))
                 dateTimeForecast.text = output
             }
-
-
 
 
         }

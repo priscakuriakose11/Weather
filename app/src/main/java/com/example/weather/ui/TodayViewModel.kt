@@ -19,20 +19,29 @@ class TodayViewModel : ViewModel() {
     private val _weatherLiveData1 = MutableLiveData<ForecastWeatherResponse?>()
     val forecastWeatherLiveData: LiveData<ForecastWeatherResponse?> = _weatherLiveData1
 
+    private var _unitsLivedata = MutableLiveData<String>("metric")
+    val unitsLiveData:LiveData<String> =_unitsLivedata
 
-    fun getCurrentWeather(city: String) {
+    fun getunit(newUnit:String){
+        _unitsLivedata.value=newUnit
+    }
+
+
+    fun getCurrentWeather(city: String,unit:String) {
         viewModelScope.launch {
-            val response = repository.getCurrentWeather(city)
+            val response = repository.getCurrentWeather(city,unit)
             Log.d("VM", "ViewModel")
             _weatherLiveData.postValue(response)
         }
     }
 
-    fun getForecastWeather(lat: Double, lon: Double) {
+    fun getForecastWeather(lat: Double, lon: Double ,unit: String) {
         viewModelScope.launch {
-            val forecastResponse = repository.getForecastWeather(lat, lon)
+            val forecastResponse = repository.getForecastWeather(lat, lon,unit)
             Log.d("VM", "ViewModel")
             _weatherLiveData1.postValue(forecastResponse)
         }
     }
+
+
 }

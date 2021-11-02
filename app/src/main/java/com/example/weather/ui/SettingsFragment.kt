@@ -27,14 +27,21 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = SettingsFragmentBinding.inflate(inflater, container, false)
-        val units= listOf<String>("metric","imperial")
-        val arrayAdapter = ArrayAdapter(requireContext(),android.R.layout.simple_spinner_item,units)
+        val units = listOf<String>("metric", "imperial")
+        val arrayAdapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, units)
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinner.adapter=arrayAdapter
-        binding.spinner.onItemSelectedListener = object:AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val present=parent?.getItemAtPosition(position).toString()
-                Log.d("un","$present")
+        binding.spinner.adapter = arrayAdapter
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val present = parent?.getItemAtPosition(position).toString()
+                viewModel.getunit(present)
+                Log.d("un", "$present")
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -47,7 +54,6 @@ class SettingsFragment : Fragment() {
 
         return binding.root
     }
-
 
 
 }

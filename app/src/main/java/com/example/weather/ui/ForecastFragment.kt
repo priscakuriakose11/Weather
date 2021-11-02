@@ -39,19 +39,19 @@ class ForecastFragment : Fragment() {
 
         viewModel.weatherLiveData.observe(viewLifecycleOwner)
         { response ->
-            if (response == null) {
-                Log.d("T", "Network call failed")
-            }
             val coord = response?.coord
             val lat = coord?.lat
             val lon = coord?.lon
+            viewModel.unitsLiveData.observe(viewLifecycleOwner)
+            { unitsLiveData ->
+                val unit = unitsLiveData
 
-            initViewModel(view)
-            if (lat != null && lon != null) {
-                initViewModel(lat, lon)
+                initViewModel(view)
+                if (lat != null && lon != null) {
+                    initViewModel(lat, lon, unit)
+                }
             }
         }
-
 
 
     }
@@ -67,8 +67,8 @@ class ForecastFragment : Fragment() {
         forecastRecyclerView.adapter = forecastAdapter
     }
 
-    private fun initViewModel(lat: Double, lon: Double) {
-        viewModel.getForecastWeather(lat, lon)
+    private fun initViewModel(lat: Double, lon: Double, unit: String) {
+        viewModel.getForecastWeather(lat, lon, unit)
         viewModel.forecastWeatherLiveData.observe(viewLifecycleOwner) { response ->
             if (response == null) {
                 Log.d("T", "Network call failed")

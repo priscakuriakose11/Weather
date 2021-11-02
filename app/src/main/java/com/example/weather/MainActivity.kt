@@ -10,7 +10,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.weather.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-
+         lateinit var unit:String
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

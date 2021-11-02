@@ -24,7 +24,7 @@ class TodayFragment() : Fragment() {
 
     private val viewModel: TodayViewModel by activityViewModels()
 
-    lateinit var fusedLocationProviderClient:FusedLocationProviderClient
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,16 +37,20 @@ class TodayFragment() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
 
+        viewModel.unitsLiveData.observe(viewLifecycleOwner)
+        { unitsLiveData ->
+            val unit = unitsLiveData
+            binding.location.setOnClickListener {
 
-        binding.location.setOnClickListener{
-
-        }
-        getToday(binding.enterCity.text.toString())
-        binding.go.setOnClickListener {
-            getToday(binding.enterCity.text.toString())
-            var oldCity = binding.enterCity.text.toString()
+            }
+            getToday(binding.enterCity.text.toString(), unit)
+            binding.go.setOnClickListener {
+                getToday(binding.enterCity.text.toString(), unit)
+                var oldCity = binding.enterCity.text.toString()
+            }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -54,8 +58,8 @@ class TodayFragment() : Fragment() {
     }
 
 
-    private fun getToday(city: String) {
-        viewModel.getCurrentWeather(city)
+    private fun getToday(city: String, unit: String) {
+        viewModel.getCurrentWeather(city, unit)
         viewModel.weatherLiveData.observe(viewLifecycleOwner)
         { response ->
             if (response == null) {

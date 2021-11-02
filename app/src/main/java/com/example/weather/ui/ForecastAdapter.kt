@@ -48,8 +48,6 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.MyViewHolder>() {
 
 
             val dt = data.dt
-            val sdf = SimpleDateFormat("EE, dd MMMM")
-            //var date = sdf.format(dt?.times(1000))
             if (dt != null) {
                 val date = java.time.format.DateTimeFormatter.ISO_INSTANT
                     .format(java.time.Instant.ofEpochSecond(dt.toLong()))

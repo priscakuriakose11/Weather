@@ -16,7 +16,7 @@
         android:backgroundTint="#1E88E5"
         android:orientation="horizontal"
         android:weightSum="5"
-        app:layout_constraintBottom_toTopOf="@id/dateTime"
+        app:layout_constraintBottom_toTopOf="@id/place"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -28,8 +28,8 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="16dp"
             android:layout_weight="3.7"
-            android:hint="@string/enter_city"
             android:text=""
+            android:hint="@string/enter_city"
             android:textSize="20sp" />
 
 
@@ -60,18 +60,28 @@
 
 
     </LinearLayout>
-
+    <TextView
+        android:id="@+id/place"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:paddingTop="5dp"
+        android:text=""
+        android:textSize="19sp"
+        app:layout_constraintBottom_toTopOf="@+id/dateTime"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolBar" />
     <TextView
         android:id="@+id/dateTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:paddingTop="16dp"
+        android:paddingTop="5dp"
         android:text=""
-        android:textSize="23sp"
+        android:textSize="19sp"
         app:layout_constraintBottom_toTopOf="@+id/highLow"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolBar" />
+        app:layout_constraintTop_toBottomOf="@id/place" />
 
     <LinearLayout
         android:id="@+id/highLow"

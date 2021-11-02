@@ -18,11 +18,16 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.weather.R
+import com.example.weather.data.Database.Cities
+import com.example.weather.data.Database.CitiesDatabase
 import com.example.weather.databinding.TodayFragmentBinding
 import com.example.weathersampleapp.data.utils.Constants.Companion.TEXT_CONTENTS
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,38 +39,49 @@ class TodayFragment() : Fragment() {
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var geocoder: Geocoder
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(TEXT_CONTENTS, binding.place.text.toString())
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        if (savedInstanceState != null) {
+            binding.place.text = savedInstanceState.getString(TEXT_CONTENTS, "")
+        }
         _binding = TodayFragmentBinding.inflate(inflater, container, false)
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
+
         return binding.root
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        val sdf = SimpleDateFormat("d MMMM, hh:mm a", Locale.getDefault())
-        val date = sdf.format(Date()).toString()
-        binding.dateTime.text = date
+
         viewModel.unitsLiveData.observe(viewLifecycleOwner)
         { unitsLiveData ->
             val unit = unitsLiveData
 
+            if (binding.place.text.isEmpty()) {
+                fetchlocation(unit)
+            }
 
-            fetchlocation(unit)
 
 
             binding.location.setOnClickListener {
                 fetchlocation(unit)
             }
+            if (!binding.place.text.isEmpty()) {
+                getToday(binding.place.text.toString(), unit)
+            }
 
-            //getToday(binding.enterCity.text.toString(), unit)
             binding.go.setOnClickListener {
                 getToday(binding.enterCity.text.toString(), unit)
-                var oldCity = binding.enterCity.text.toString()
+
             }
         }
     }
@@ -96,21 +112,17 @@ class TodayFragment() : Fragment() {
                 Log.d("lon", "${it.longitude}")
                 var address = geocoder.getFromLocation(it.latitude, it.longitude, 1)
                 var city = address.get(0).getAdminArea()
-                Log.d("city", "$city")
-                Toast.makeText(requireContext(), "Current Location : $city", Toast.LENGTH_LONG)
-                    .show()
+                var city1 = address.get(0).getLocality()
+
+
+                binding.place.text = city1
                 getToday(city, unit)
+
 
             }
         }
 
 
-    }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
 
@@ -120,15 +132,16 @@ class TodayFragment() : Fragment() {
         { response ->
             if (response == null) {
                 Log.d("T", "Network call failed")
-
+                Toast.makeText(requireContext(), "$city is not city!!!", Toast.LENGTH_SHORT).show()
             }
             val main = response?.main
-
-            val clouds = response?.clouds
+            binding.place.text = response?.name
             binding.temperature.text = main?.temp.toString()
             binding.highTemperature.text = main?.tempMax.toString()
             binding.lowTemperature.text = main?.tempMin.toString()
-
+            val sdf = SimpleDateFormat("d MMMM, hh:mm a", Locale.getDefault())
+            val date = sdf.format(Date()).toString()
+            binding.dateTime.text = date
             val WeatherItem = response?.weather?.get(0)
             binding.iconText.text = WeatherItem?.description
             val iconid = WeatherItem?.icon
@@ -137,6 +150,19 @@ class TodayFragment() : Fragment() {
             Glide.with(this).load(imageUrl)
                 .error(R.drawable.ic_baseline_cloud_circle_24)
                 .into(binding.icon)
+            binding.favorite.setOnClickListener {
+                if (!binding.place.text.isEmpty()) {
+                    val coord = response?.coord
+                    val cityInfo = Cities(response?.id, response?.name, coord?.lon, coord?.lat)
+                    GlobalScope.launch(Dispatchers.IO) {
+                        CitiesDatabase.getInstance(requireContext()).citiesDao().insert(cityInfo)
+                    }
+                    Toast.makeText(requireContext(), "Favorited!!!", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "EnterCity and Go!!!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
         }
 
     }

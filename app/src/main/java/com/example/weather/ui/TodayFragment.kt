@@ -35,7 +35,7 @@ class TodayFragment() : Fragment() {
     private var _binding: TodayFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: TodayViewModel by activityViewModels()
+    private val viewModel: CitiesViewModel by activityViewModels()
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var geocoder: Geocoder
@@ -65,7 +65,6 @@ class TodayFragment() : Fragment() {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
 
         viewModel.unitsLiveData.observe(viewLifecycleOwner)
         { unitsLiveData ->
@@ -159,9 +158,9 @@ class TodayFragment() : Fragment() {
                 if (response != null && !binding.place.text.isEmpty()) {
                     val coord = response?.coord
                     val cityInfo = Cities(response?.id, response?.name, coord?.lon, coord?.lat)
-                    GlobalScope.launch(Dispatchers.IO) {
-                        CitiesDatabase.getInstance(requireContext()).citiesDao().insert(cityInfo)
-                    }
+
+                    viewModel.addCity(cityInfo)
+
                     Toast.makeText(requireContext(), "Favorited!!!", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(requireContext(), "Enter Valid City !!!", Toast.LENGTH_SHORT)

@@ -22,7 +22,7 @@ class ForecastFragment : Fragment() {
     private var _binding: ForecastFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: TodayViewModel by activityViewModels()
+    private val viewModel: CitiesViewModel by activityViewModels()
 
 
     override fun onCreateView(

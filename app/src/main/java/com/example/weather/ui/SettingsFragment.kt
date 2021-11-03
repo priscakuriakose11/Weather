@@ -19,7 +19,7 @@ class SettingsFragment : Fragment() {
     private var _binding: SettingsFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: TodayViewModel by activityViewModels()
+    private val viewModel: CitiesViewModel by activityViewModels()
     override fun onResume() {
         super.onResume()
         val units = resources.getStringArray(R.array.units)

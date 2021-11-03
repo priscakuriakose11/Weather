@@ -1,4 +1,4 @@
-package com.example.weather.data.Repository
+package com.example.weather.data.repository
 
 import com.example.weather.data.api.OpenWeatherApiService
 import com.example.weather.data.model.ForecastWeatherResponse

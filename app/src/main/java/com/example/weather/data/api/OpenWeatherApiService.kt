@@ -2,12 +2,8 @@ package com.example.weather.data.api
 
 import com.example.weather.data.model.ForecastWeatherResponse
 import com.example.weather.data.utils.CurrentWeatherResponse
-import com.example.weathersampleapp.data.utils.Constants
 import com.example.weathersampleapp.data.utils.Constants.Companion.ApiKey
-import com.example.weathersampleapp.data.utils.Constants.Companion.units
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 

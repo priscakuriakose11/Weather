@@ -20,6 +20,14 @@ class SettingsFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: TodayViewModel by activityViewModels()
+    override fun onResume() {
+        super.onResume()
+        val units = resources.getStringArray(R.array.units)
+        val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, units)
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinner.adapter = arrayAdapter
+
+    }
 
 
     override fun onCreateView(
@@ -27,11 +35,7 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = SettingsFragmentBinding.inflate(inflater, container, false)
-        val units = listOf<String>("metric", "imperial")
-        val arrayAdapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, units)
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinner.adapter = arrayAdapter
+
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,

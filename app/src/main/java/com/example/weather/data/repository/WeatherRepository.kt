@@ -1,6 +1,7 @@
-package com.example.weather.data.Repository
+package com.example.weather.data.repository
 
 import android.util.Log
+import com.example.weather.data.Database.CitiesDao
 import com.example.weather.data.api.RetrofitInstance
 import com.example.weather.data.model.ForecastWeatherResponse
 import com.example.weather.data.utils.CurrentWeatherResponse
@@ -25,4 +26,6 @@ class WeatherRepository {
         Log.d("Repository", "Request Failed")
         return null
     }
+
+
 }

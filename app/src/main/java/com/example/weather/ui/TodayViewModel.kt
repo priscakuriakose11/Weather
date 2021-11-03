@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.weather.data.Repository.WeatherRepository
 import com.example.weather.data.model.ForecastWeatherResponse
+import com.example.weather.data.repository.WeatherRepository
 import com.example.weather.data.utils.CurrentWeatherResponse
 import kotlinx.coroutines.launch
 
@@ -22,9 +22,7 @@ class TodayViewModel : ViewModel() {
     private var _unitsLivedata = MutableLiveData<String>("metric")
     val unitsLiveData:LiveData<String> =_unitsLivedata
 
-    fun getunit(newUnit:String){
-        _unitsLivedata.value=newUnit
-    }
+
 
 
     fun getCurrentWeather(city: String,unit:String) {
@@ -43,5 +41,7 @@ class TodayViewModel : ViewModel() {
         }
     }
 
-
+    fun getunit(newUnit:String){
+        _unitsLivedata.value=newUnit
+    }
 }

@@ -39,18 +39,23 @@ class TodayFragment() : Fragment() {
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var geocoder: Geocoder
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(TEXT_CONTENTS, binding.place.text.toString())
+
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         if (savedInstanceState != null) {
             binding.place.text = savedInstanceState.getString(TEXT_CONTENTS, "")
         }
+
         _binding = TodayFragmentBinding.inflate(inflater, container, false)
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
@@ -110,12 +115,12 @@ class TodayFragment() : Fragment() {
             if (it != null) {
                 Log.d("lat", "${it.latitude}")
                 Log.d("lon", "${it.longitude}")
-                var address = geocoder.getFromLocation(it.latitude, it.longitude, 1)
-                var city = address.get(0).getAdminArea()
-                var city1 = address.get(0).getLocality()
+                val address = geocoder.getFromLocation(it.latitude, it.longitude, 1)
+                val city = address.get(0).getAdminArea()
+                //var city1 = address.get(0).getLocality()
 
 
-                binding.place.text = city1
+                binding.place.text = city
                 getToday(city, unit)
 
 
@@ -151,7 +156,7 @@ class TodayFragment() : Fragment() {
                 .error(R.drawable.ic_baseline_cloud_circle_24)
                 .into(binding.icon)
             binding.favorite.setOnClickListener {
-                if (!binding.place.text.isEmpty()) {
+                if (response != null && !binding.place.text.isEmpty()) {
                     val coord = response?.coord
                     val cityInfo = Cities(response?.id, response?.name, coord?.lon, coord?.lat)
                     GlobalScope.launch(Dispatchers.IO) {
@@ -159,7 +164,7 @@ class TodayFragment() : Fragment() {
                     }
                     Toast.makeText(requireContext(), "Favorited!!!", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireContext(), "EnterCity and Go!!!", Toast.LENGTH_SHORT)
+                    Toast.makeText(requireContext(), "Enter Valid City !!!", Toast.LENGTH_SHORT)
                         .show()
                 }
             }

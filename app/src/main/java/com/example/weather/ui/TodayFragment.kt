@@ -66,6 +66,25 @@ class TodayFragment() : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+
+        viewModel.readAll.observe(viewLifecycleOwner, {
+
+            if (it.isNotEmpty()) {
+                val allCities = mutableListOf<String>()
+                for (i in it) {
+                    allCities.add(i.name!!)
+                }
+                Log.d("cities", "${it[0]}")
+                val arrayAdapter =
+                    ArrayAdapter(requireContext(), R.layout.dropdown_cities, allCities)
+                binding.enterCity.setAdapter(arrayAdapter)
+            }
+
+        })
+
+
+
+
         viewModel.unitsLiveData.observe(viewLifecycleOwner)
         { unitsLiveData ->
             val unit = unitsLiveData
@@ -91,8 +110,8 @@ class TodayFragment() : Fragment() {
     }
 
     private fun fetchlocation(unit: String) {
-        val geocoder = Geocoder(requireContext(), Locale.getDefault())
-        val task: Task<Location> = fusedLocationProviderClient.lastLocation
+
+
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -109,20 +128,26 @@ class TodayFragment() : Fragment() {
                 101
             )
             return
-        }
-        task.addOnSuccessListener {
-            if (it != null) {
-                Log.d("lat", "${it.latitude}")
-                Log.d("lon", "${it.longitude}")
-                val address = geocoder.getFromLocation(it.latitude, it.longitude, 1)
-                val city = address.get(0).getAdminArea()
-                //var city1 = address.get(0).getLocality()
+        } else {
+
+            val geocoder = Geocoder(requireContext(), Locale.getDefault())
+            val task: Task<Location> = fusedLocationProviderClient.lastLocation
+            task.addOnSuccessListener {
+                Log.d("Location", "Success")
+                if (it != null) {
+                    Log.d("location", "Not Null")
+                    val address = geocoder.getFromLocation(it.latitude, it.longitude, 1)
+                    val city = address.get(0).getAdminArea()
+                    //var city1 = address.get(0).getLocality()
 
 
-                binding.place.text = city
-                getToday(city, unit)
+                    binding.place.text = city
+                    getToday(city, unit)
 
 
+                } else {
+                    Log.d("location", "Null")
+                }
             }
         }
 
@@ -131,11 +156,12 @@ class TodayFragment() : Fragment() {
 
 
     private fun getToday(city: String, unit: String) {
+        Log.d("getToday", "Success")
         viewModel.getCurrentWeather(city, unit)
         viewModel.weatherLiveData.observe(viewLifecycleOwner)
         { response ->
             if (response == null) {
-                Log.d("T", "Network call failed")
+                Log.d("Response", "Null")
                 Toast.makeText(requireContext(), "$city is not city!!!", Toast.LENGTH_SHORT).show()
             }
             val main = response?.main
@@ -149,7 +175,7 @@ class TodayFragment() : Fragment() {
             val WeatherItem = response?.weather?.get(0)
             binding.iconText.text = WeatherItem?.description
             val iconid = WeatherItem?.icon
-            Log.d("Icon", "$iconid")
+
             val imageUrl = "https://openweathermap.org/img/wn/$iconid@2x.png"
             Glide.with(this).load(imageUrl)
                 .error(R.drawable.ic_baseline_cloud_circle_24)

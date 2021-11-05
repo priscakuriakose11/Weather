@@ -46,7 +46,7 @@ class CitiesViewModel(application: Application) :AndroidViewModel(application){
     fun getCurrentWeather(city: String,unit:String) {
         viewModelScope.launch {
             val response = repository.getCurrentWeather(city,unit)
-            Log.d("VM", "ViewModel")
+            Log.d("ViewModel", "Success")
             _weatherLiveData.postValue(response)
         }
     }
@@ -54,7 +54,7 @@ class CitiesViewModel(application: Application) :AndroidViewModel(application){
     fun getForecastWeather(lat: Double, lon: Double ,unit: String) {
         viewModelScope.launch {
             val forecastResponse = repository.getForecastWeather(lat, lon,unit)
-            Log.d("VM", "ViewModel")
+            Log.d("ViewModel", "Success")
             _weatherLiveData1.postValue(forecastResponse)
         }
     }

@@ -4,10 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -18,16 +15,12 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.weather.R
-import com.example.weather.data.Database.Cities
-import com.example.weather.data.Database.CitiesDatabase
+import com.example.weather.data.database.Cities
 import com.example.weather.databinding.TodayFragmentBinding
 import com.example.weathersampleapp.data.utils.Constants.Companion.TEXT_CONTENTS
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -87,7 +80,24 @@ class TodayFragment() : Fragment() {
 
         viewModel.unitsLiveData.observe(viewLifecycleOwner)
         { unitsLiveData ->
+
             val unit = unitsLiveData
+            if(unit=="Metric")
+            {   binding.highTemperatureUnit.text = "°C"
+                binding.lowTemperatureUnit.text = "°C"
+                binding.temperatureUnit.text="°C"}
+            if (unit=="Imperial")
+            {   binding.lowTemperatureUnit.text="°F"
+                binding.highTemperatureUnit.text="°F"
+                binding.temperatureUnit.text="°F"}
+
+
+            viewModel.weatherLiveData.observe(viewLifecycleOwner){
+                    response->
+                if (response!=null){
+                    binding.place.text=response.name
+                }
+            }
 
             if (binding.place.text.isEmpty()) {
                 fetchlocation(unit)

@@ -44,12 +44,12 @@ class SettingsFragment : Fragment() {
                 id: Long
             ) {
                 val present = parent?.getItemAtPosition(position).toString()
-                viewModel.getunit(present)
+                viewModel.getunit(present,position)
                 Log.d("un", "$present")
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                TODO("Not yet implemented")
+
             }
 
         }

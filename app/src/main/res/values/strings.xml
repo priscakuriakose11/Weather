@@ -9,6 +9,10 @@
     <string name="weatherForecast">Weather Forecast</string>
     <string name="currentWeather">Current Weather</string>
     <string name="enter_city">Enter City</string>
+    <string name="go">Go</string>
+    <string name="high">High :</string>
+    <string name="low">Low :</string>
+    <string name="units">Units</string>
     <string-array name="units" >
         <item>Metric</item>
         <item>Imperial</item>

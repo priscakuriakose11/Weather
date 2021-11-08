@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:background="@color/purple_200"
-        android:backgroundTint="#1E88E5"
+        android:backgroundTint="#6FBADF"
         android:orientation="horizontal"
         android:weightSum="5"
         app:layout_constraintBottom_toTopOf="@id/place"
@@ -22,53 +22,54 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:id="@+id/enterCity1"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:layout_marginTop="16dp"
-            android:layout_weight="3.7"
             android:layout_marginEnd="2dp"
-            android:textSize="20sp" >
+            android:layout_weight="3.7"
+            android:textSize="20sp">
 
             <AutoCompleteTextView
                 android:id="@+id/enterCity"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text=""
-                android:hint="@string/enter_city"/>
+                android:hint="@string/enter_city"
+                android:text="" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <Button
+            android:id="@+id/go"
+            android:layout_width="3dp"
+            android:layout_height="61dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="0.7"
+            android:backgroundTint="#8E24AA"
+            android:text="@string/go" />
 
         <ImageView
             android:id="@+id/favorite"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="58dp"
             android:layout_marginTop="16dp"
             android:layout_weight="0.3"
             android:src="@drawable/ic_baseline_favorite_24" />
 
-        <Button
-            android:id="@+id/go"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_weight="0.7"
-            android:backgroundTint="#8E24AA"
-            android:text="Go" />
 
         <ImageView
             android:id="@+id/location"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="59dp"
             android:layout_marginTop="16dp"
             android:layout_weight="0.3"
             android:src="@drawable/ic_baseline_add_location_alt_24" />
 
 
     </LinearLayout>
+
     <TextView
         android:id="@+id/place"
         android:layout_width="wrap_content"
@@ -77,9 +78,11 @@
         android:paddingTop="5dp"
         android:text=""
         android:textSize="19sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/dateTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolBar" />
+
     <TextView
         android:id="@+id/dateTime"
         android:layout_width="wrap_content"
@@ -107,7 +110,7 @@
             android:id="@+id/highTemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="High : "
+            android:text="@string/high"
             android:textSize="23sp" />
 
         <TextView
@@ -118,15 +121,29 @@
             android:textSize="23sp" />
 
         <TextView
+            android:id="@+id/highTemperatureUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="23sp" />
+
+        <TextView
             android:id="@+id/lowTemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="20dp"
-            android:text="Low : "
+            android:text="@string/low"
             android:textSize="23sp" />
 
         <TextView
             android:id="@+id/lowTemperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="23sp" />
+
+        <TextView
+            android:id="@+id/lowTemperatureUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
@@ -141,6 +158,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:paddingTop="16dp"
+        android:paddingRight="5dp"
         android:text=""
         android:textSize="70sp"
         app:layout_constraintBottom_toTopOf="@+id/iconText"
@@ -148,17 +166,25 @@
         app:layout_constraintTop_toBottomOf="@id/highLow" />
 
     <TextView
+        android:id="@+id/temperatureUnit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="15dp"
+        android:text=""
+        android:textSize="35sp"
+        app:layout_constraintBottom_toTopOf="@+id/iconText"
+        app:layout_constraintStart_toEndOf="@+id/temperature" />
+
+    <TextView
         android:id="@+id/iconText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:paddingTop="16dp"
-
         android:text=""
         android:textSize="40sp"
         app:layout_constraintBottom_toTopOf="@+id/icon"
         app:layout_constraintEnd_toEndOf="parent"
-
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/temperature" />
 

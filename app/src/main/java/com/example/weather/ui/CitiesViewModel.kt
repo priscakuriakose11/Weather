@@ -6,13 +6,12 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.weather.data.Database.Cities
-import com.example.weather.data.Database.CitiesDatabase
+import com.example.weather.data.database.Cities
+import com.example.weather.data.database.CitiesDatabase
 import com.example.weather.data.model.ForecastWeatherResponse
 import com.example.weather.data.repository.CitiesRepository
 import com.example.weather.data.repository.WeatherRepository
 import com.example.weather.data.utils.CurrentWeatherResponse
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class CitiesViewModel(application: Application) :AndroidViewModel(application){
@@ -37,9 +36,11 @@ class CitiesViewModel(application: Application) :AndroidViewModel(application){
     private val _weatherLiveData1 = MutableLiveData<ForecastWeatherResponse?>()
     val forecastWeatherLiveData: LiveData<ForecastWeatherResponse?> = _weatherLiveData1
 
-    private var _unitsLivedata = MutableLiveData<String>("metric")
-    val unitsLiveData:LiveData<String> =_unitsLivedata
+    private var _unitsLivedata = MutableLiveData<String>("Metric")
+    private var _unitsPositionLiveData=MutableLiveData<Int>(0)
 
+    val unitsLiveData:LiveData<String> =_unitsLivedata
+    val unitsPositionLiveData:LiveData<Int> = _unitsPositionLiveData
 
 
 
@@ -59,7 +60,8 @@ class CitiesViewModel(application: Application) :AndroidViewModel(application){
         }
     }
 
-    fun getunit(newUnit:String){
+    fun getunit(newUnit:String,newUnitPosition:Int){
         _unitsLivedata.value=newUnit
+        _unitsPositionLiveData.value=newUnitPosition
     }
 }

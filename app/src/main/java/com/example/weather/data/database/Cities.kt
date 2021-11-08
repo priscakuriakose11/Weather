@@ -1,9 +1,9 @@
-package com.example.weather.data.Database
+package com.example.weather.data.database
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
+
 @Entity(tableName="Cities")
 data class Cities(
     @PrimaryKey(autoGenerate = false) val id: Int? = null,

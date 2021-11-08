@@ -31,12 +31,23 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.MyViewHolder>() {
         val lowtemperatureForecast = view.findViewById<TextView>(R.id.lowTemperatureForecast)
         val dateTimeForecast = view.findViewById<TextView>(R.id.dateTimeForecast)
         val iconForecast = view.findViewById<ImageView>(R.id.iconForecast)
+        val highTemperatureForecastUnit =
+            view.findViewById<TextView>(R.id.highTemperatureForecastUnit)
+        val lowTemperatureForecastUnit =
+            view.findViewById<TextView>(R.id.lowTemperatureForecastUnit)
 
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(data: DailyItem) {
             val temp = data.temp
             // temperatureForecast.text=temp?.day.toString()
             hightemperatureForecast.text = temp?.max.toString()
+            if (hightemperatureForecast.text.toString() <= "56") {
+                highTemperatureForecastUnit.text = "°C"
+                lowTemperatureForecastUnit.text = "°C"
+            } else {
+                highTemperatureForecastUnit.text = "°F"
+                lowTemperatureForecastUnit.text = "°F"
+            }
             lowtemperatureForecast.text = temp?.min.toString()
 
             val WeatherItem = data?.weather?.get(0)

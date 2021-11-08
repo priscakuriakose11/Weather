@@ -45,7 +45,6 @@ class ForecastFragment : Fragment() {
             viewModel.unitsLiveData.observe(viewLifecycleOwner)
             { unitsLiveData ->
                 val unit = unitsLiveData
-
                 initViewModel(view)
                 if (lat != null && lon != null) {
                     initViewModel(lat, lon, unit)

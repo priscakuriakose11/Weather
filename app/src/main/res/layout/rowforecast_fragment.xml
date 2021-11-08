@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingTop="16dp"
-    android:paddingBottom="10dp">
+    android:paddingTop="5dp"
+    android:paddingBottom="70dp">
 
 
     <LinearLayout
@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingTop="16dp"
-            android:text="28/10/2021,09.44 AM"
+            android:text=""
             android:textSize="23sp" />
 
         <LinearLayout
@@ -34,14 +34,20 @@
                 android:id="@+id/highTempForecast"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="High : "
+                android:text="@string/high"
                 android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/highTemperatureForecast"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="35deg"
+                android:text=""
+                android:textSize="23sp" />
+            <TextView
+                android:id="@+id/highTemperatureForecastUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
                 android:textSize="23sp" />
 
             <TextView
@@ -49,14 +55,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
-                android:text="Low : "
+                android:text="@string/low"
                 android:textSize="15sp" />
 
             <TextView
                 android:id="@+id/lowTemperatureForecast"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="30deg"
+                android:text=""
+                android:textSize="23sp" />
+            <TextView
+                android:id="@+id/lowTemperatureForecastUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
                 android:textSize="23sp" />
 
 

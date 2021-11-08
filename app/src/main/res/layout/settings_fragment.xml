@@ -14,7 +14,7 @@
         android:paddingTop="10dp"
         android:paddingLeft="10dp"
         android:textSize="24sp"
-        android:text="Units" />
+        android:text="@string/units" />
 
     <Spinner
         android:id="@+id/spinner"

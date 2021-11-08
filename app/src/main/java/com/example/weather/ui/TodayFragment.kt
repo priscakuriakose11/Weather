@@ -4,6 +4,9 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -13,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.activityViewModels
+import androidx.room.CoroutinesRoom.Companion.execute
 import com.bumptech.glide.Glide
 import com.example.weather.R
 import com.example.weather.data.database.Cities
@@ -21,6 +25,9 @@ import com.example.weathersampleapp.data.utils.Constants.Companion.TEXT_CONTENTS
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
+import java.io.IOException
+import java.net.InetSocketAddress
+import java.net.Socket
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,23 +38,11 @@ class TodayFragment() : Fragment() {
     private val viewModel: CitiesViewModel by activityViewModels()
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    lateinit var geocoder: Geocoder
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(TEXT_CONTENTS, binding.place.text.toString())
-
-    }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        if (savedInstanceState != null) {
-            binding.place.text = savedInstanceState.getString(TEXT_CONTENTS, "")
-        }
 
         _binding = TodayFragmentBinding.inflate(inflater, container, false)
         fusedLocationProviderClient =
@@ -58,7 +53,14 @@ class TodayFragment() : Fragment() {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        InternetCheck(object : InternetCheck.Consumer {
+            override fun accept(internet: Boolean?) {
+                Log.d("Internet", "$internet")
+                if(internet==false) {
+                    Toast.makeText(requireContext(), "No Internet", Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
 
         viewModel.readAll.observe(viewLifecycleOwner, {
 
@@ -82,20 +84,21 @@ class TodayFragment() : Fragment() {
         { unitsLiveData ->
 
             val unit = unitsLiveData
-            if(unit=="Metric")
-            {   binding.highTemperatureUnit.text = "°C"
+            if (unit == "Metric") {
+                binding.highTemperatureUnit.text = "°C"
                 binding.lowTemperatureUnit.text = "°C"
-                binding.temperatureUnit.text="°C"}
-            if (unit=="Imperial")
-            {   binding.lowTemperatureUnit.text="°F"
-                binding.highTemperatureUnit.text="°F"
-                binding.temperatureUnit.text="°F"}
+                binding.temperatureUnit.text = "°C"
+            }
+            if (unit == "Imperial") {
+                binding.lowTemperatureUnit.text = "°F"
+                binding.highTemperatureUnit.text = "°F"
+                binding.temperatureUnit.text = "°F"
+            }
 
 
-            viewModel.weatherLiveData.observe(viewLifecycleOwner){
-                    response->
-                if (response!=null){
-                    binding.place.text=response.name
+            viewModel.weatherLiveData.observe(viewLifecycleOwner) { response ->
+                if (response != null) {
+                    binding.place.text = response.name
                 }
             }
 
@@ -149,14 +152,13 @@ class TodayFragment() : Fragment() {
                     val address = geocoder.getFromLocation(it.latitude, it.longitude, 1)
                     val city = address.get(0).getAdminArea()
                     //var city1 = address.get(0).getLocality()
-
-
                     binding.place.text = city
                     getToday(city, unit)
 
 
                 } else {
                     Log.d("location", "Null")
+                    Toast.makeText(requireContext(), "Set Location", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -207,5 +209,31 @@ class TodayFragment() : Fragment() {
 
     }
 
+    internal class InternetCheck(private val mConsumer: Consumer) :
+        AsyncTask<Void, Void, Boolean>() {
+        interface Consumer {
+            fun accept(internet: Boolean?)
+        }
+
+        init {
+            execute()
+        }
+
+        override fun doInBackground(vararg voids: Void): Boolean? {
+            try {
+                val sock = Socket()
+                sock.connect(InetSocketAddress("8.8.8.8", 53), 1500)
+                sock.close()
+                return true
+            } catch (e: IOException) {
+                return false
+            }
+
+        }
+
+        override fun onPostExecute(internet: Boolean?) {
+            mConsumer.accept(internet)
+        }
+    }
 
 }

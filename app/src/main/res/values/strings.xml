@@ -13,8 +13,21 @@
     <string name="high">High :</string>
     <string name="low">Low :</string>
     <string name="units">Units</string>
-    <string-array name="units" >
+    <string name="dateFormat">d MMMM, hh:mm a</string>
+    <string name="celsiusSymbol">°C</string>
+    <string name="fahrenheitSymbol">°F</string>
+    <string name="metric">Metric</string>
+    <string name="imperial">Imperial</string>
+    <string name="dateFormatObtained">yyyy-MM-dd\'T\'HH:mm:ss</string>
+    <string name="dateFormatForecast">EE , dd LLL </string>
+    <string-array name="unitsM" >
         <item>Metric</item>
         <item>Imperial</item>
     </string-array>
+    <string-array name="unitsI" >
+        <item>Imperial</item>
+        <item>Metric</item>
+    </string-array>
+
+
 </resources>

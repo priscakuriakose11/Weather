@@ -22,11 +22,20 @@ class SettingsFragment : Fragment() {
     private val viewModel: CitiesViewModel by activityViewModels()
     override fun onResume() {
         super.onResume()
-        val units = resources.getStringArray(R.array.units)
-        val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, units)
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinner.adapter = arrayAdapter
-
+        viewModel.unitData.observe(viewLifecycleOwner){
+            if(it==getString(R.string.imperial)) {
+                val units = resources.getStringArray(R.array.unitsI)
+                val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, units)
+                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding.spinner.adapter = arrayAdapter
+            }
+            else{
+                val units = resources.getStringArray(R.array.unitsM)
+                val arrayAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, units)
+                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding.spinner.adapter = arrayAdapter
+            }
+        }
     }
 
 
@@ -43,18 +52,13 @@ class SettingsFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                val present = parent?.getItemAtPosition(position).toString()
-                viewModel.getunit(present,position)
-                Log.d("un", "$present")
+                viewModel.saveCurrentUnit(parent?.getItemAtPosition(position).toString())
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-
             }
 
         }
-
-
 
         return binding.root
     }

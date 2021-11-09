@@ -2,14 +2,12 @@ package com.example.weather.ui
 
 import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.weather.data.database.Cities
 import com.example.weather.data.database.CitiesDatabase
 import com.example.weather.data.model.ForecastWeatherResponse
 import com.example.weather.data.repository.CitiesRepository
+import com.example.weather.data.repository.SettingsRepository
 import com.example.weather.data.repository.WeatherRepository
 import com.example.weather.data.utils.CurrentWeatherResponse
 import kotlinx.coroutines.launch
@@ -33,17 +31,6 @@ class CitiesViewModel(application: Application) :AndroidViewModel(application){
     private val _weatherLiveData = MutableLiveData<CurrentWeatherResponse?>()
     val weatherLiveData: LiveData<CurrentWeatherResponse?> = _weatherLiveData
 
-    private val _weatherLiveData1 = MutableLiveData<ForecastWeatherResponse?>()
-    val forecastWeatherLiveData: LiveData<ForecastWeatherResponse?> = _weatherLiveData1
-
-    private var _unitsLivedata = MutableLiveData<String>("Metric")
-    private var _unitsPositionLiveData=MutableLiveData<Int>(0)
-
-    val unitsLiveData:LiveData<String> =_unitsLivedata
-    val unitsPositionLiveData:LiveData<Int> = _unitsPositionLiveData
-
-
-
     fun getCurrentWeather(city: String,unit:String) {
         viewModelScope.launch {
             val response = repository.getCurrentWeather(city,unit)
@@ -51,6 +38,9 @@ class CitiesViewModel(application: Application) :AndroidViewModel(application){
             _weatherLiveData.postValue(response)
         }
     }
+
+    private val _weatherLiveData1 = MutableLiveData<ForecastWeatherResponse?>()
+    val forecastWeatherLiveData: LiveData<ForecastWeatherResponse?> = _weatherLiveData1
 
     fun getForecastWeather(lat: Double, lon: Double ,unit: String) {
         viewModelScope.launch {
@@ -60,8 +50,12 @@ class CitiesViewModel(application: Application) :AndroidViewModel(application){
         }
     }
 
-    fun getunit(newUnit:String,newUnitPosition:Int){
-        _unitsLivedata.value=newUnit
-        _unitsPositionLiveData.value=newUnitPosition
+
+    private val settingsRepository = SettingsRepository(application)
+
+    val unitData =settingsRepository.unitFlow.asLiveData()
+
+    fun saveCurrentUnit( unit:String)=viewModelScope.launch {
+        settingsRepository.saveCurrentUnit(unit)
     }
 }

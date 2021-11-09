@@ -1,27 +1,25 @@
 package com.example.weather.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
-import android.net.ConnectivityManager
-import android.net.NetworkInfo
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.room.CoroutinesRoom.Companion.execute
 import com.bumptech.glide.Glide
 import com.example.weather.R
 import com.example.weather.data.database.Cities
 import com.example.weather.databinding.TodayFragmentBinding
-import com.example.weathersampleapp.data.utils.Constants.Companion.TEXT_CONTENTS
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
@@ -80,21 +78,10 @@ class TodayFragment() : Fragment() {
 
 
 
-        viewModel.unitsLiveData.observe(viewLifecycleOwner)
+        viewModel.unitData.observe(viewLifecycleOwner)
         { unitsLiveData ->
 
             val unit = unitsLiveData
-            if (unit == "Metric") {
-                binding.highTemperatureUnit.text = "°C"
-                binding.lowTemperatureUnit.text = "°C"
-                binding.temperatureUnit.text = "°C"
-            }
-            if (unit == "Imperial") {
-                binding.lowTemperatureUnit.text = "°F"
-                binding.highTemperatureUnit.text = "°F"
-                binding.temperatureUnit.text = "°F"
-            }
-
 
             viewModel.weatherLiveData.observe(viewLifecycleOwner) { response ->
                 if (response != null) {
@@ -106,11 +93,10 @@ class TodayFragment() : Fragment() {
                 fetchlocation(unit)
             }
 
-
-
             binding.location.setOnClickListener {
                 fetchlocation(unit)
             }
+
             if (!binding.place.text.isEmpty()) {
                 getToday(binding.place.text.toString(), unit)
             }
@@ -167,6 +153,7 @@ class TodayFragment() : Fragment() {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private fun getToday(city: String, unit: String) {
         Log.d("getToday", "Success")
         viewModel.getCurrentWeather(city, unit)
@@ -178,10 +165,17 @@ class TodayFragment() : Fragment() {
             }
             val main = response?.main
             binding.place.text = response?.name
-            binding.temperature.text = main?.temp.toString()
-            binding.highTemperature.text = main?.tempMax.toString()
-            binding.lowTemperature.text = main?.tempMin.toString()
-            val sdf = SimpleDateFormat("d MMMM, hh:mm a", Locale.getDefault())
+            if (unit==getString(R.string.metric)) {
+                binding.temperature.text = main?.temp.toString() + getString(R.string.celsiusSymbol)
+                binding.highTemperature.text = main?.tempMax.toString() + getString(R.string.celsiusSymbol)
+                binding.lowTemperature.text = main?.tempMin.toString()  + getString(R.string.celsiusSymbol)
+            }
+            if (unit==getString(R.string.imperial)) {
+                binding.temperature.text = main?.temp.toString() + getString(R.string.fahrenheitSymbol)
+                binding.highTemperature.text = main?.tempMax.toString() + getString(R.string.fahrenheitSymbol)
+                binding.lowTemperature.text = main?.tempMin.toString()  + getString(R.string.fahrenheitSymbol)
+            }
+            val sdf = SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault())
             val date = sdf.format(Date()).toString()
             binding.dateTime.text = date
             val WeatherItem = response?.weather?.get(0)

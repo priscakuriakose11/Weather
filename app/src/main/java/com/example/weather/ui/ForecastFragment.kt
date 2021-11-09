@@ -1,26 +1,28 @@
 package com.example.weather.ui
 
-import androidx.lifecycle.ViewModelProvider
+import android.annotation.SuppressLint
+import android.icu.text.SimpleDateFormat
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.weather.R
-import com.example.weather.data.model.DailyItem
+import com.example.weather.data.model.ForecastDailyModel
 import com.example.weather.databinding.ForecastFragmentBinding
-import com.example.weather.databinding.TodayFragmentBinding
 
 class ForecastFragment : Fragment() {
     private lateinit var forecastAdapter: ForecastAdapter
     private var _binding: ForecastFragmentBinding? = null
     private val binding get() = _binding!!
+    private var daily = mutableListOf<ForecastDailyModel>()
 
     private val viewModel: CitiesViewModel by activityViewModels()
 
@@ -42,12 +44,12 @@ class ForecastFragment : Fragment() {
             val coord = response?.coord
             val lat = coord?.lat
             val lon = coord?.lon
-            viewModel.unitsLiveData.observe(viewLifecycleOwner)
+            viewModel.unitData.observe(viewLifecycleOwner)
             { unitsLiveData ->
                 val unit = unitsLiveData
-                initViewModel(view)
+                initRecyclerView(view)
                 if (lat != null && lon != null) {
-                    initViewModel(lat, lon, unit)
+                    getForecastWeather(lat, lon, unit)
                 }
             }
         }
@@ -55,7 +57,7 @@ class ForecastFragment : Fragment() {
 
     }
 
-    private fun initViewModel(view: View) {
+    private fun initRecyclerView(view: View) {
         val forecastRecyclerView = view.findViewById<RecyclerView>(R.id.ForecastRecyclerView)
         forecastRecyclerView.layoutManager = LinearLayoutManager(activity)
         val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
@@ -66,15 +68,43 @@ class ForecastFragment : Fragment() {
         forecastRecyclerView.adapter = forecastAdapter
     }
 
-    private fun initViewModel(lat: Double, lon: Double, unit: String) {
+    @SuppressLint("SimpleDateFormat")
+    private fun getForecastWeather(lat: Double, lon: Double, unit: String) {
+        var unitSymbol: String
         viewModel.getForecastWeather(lat, lon, unit)
         viewModel.forecastWeatherLiveData.observe(viewLifecycleOwner) { response ->
             if (response == null) {
                 Log.d("T", "Network call failed")
+            } else {
+                val maxDays = response?.daily?.lastIndex
+                for (i in 0..maxDays!!) {
+                    if (unit == getString(R.string.metric)) {
+                        unitSymbol = getString(R.string.celsiusSymbol)
+                    } else {
+                        unitSymbol = getString(R.string.fahrenheitSymbol)
+                    }
+                    val min = response?.daily?.get(i)?.temp?.min.toString() + unitSymbol
+                    val max = response?.daily?.get(i)?.temp?.max.toString() + unitSymbol
 
+
+                    val dt1 = response?.daily?.get(i)?.dt
+                    val date = java.time.format.DateTimeFormatter.ISO_INSTANT
+                        .format(java.time.Instant.ofEpochSecond(dt1!!.toLong()))
+                    val parser = SimpleDateFormat(getString(R.string.dateFormatObtained))
+                    val formatter = SimpleDateFormat(getString(R.string.dateFormatForecast))
+                    val output = formatter.format(parser.parse(date))
+                    val dt = output
+
+                    val iconId = response?.daily?.get(i)?.weather?.get(0)?.icon
+
+                    daily.add(ForecastDailyModel(iconId, min, max, dt))
+                }
+                forecastAdapter.setForecastData(daily as ArrayList<ForecastDailyModel>)
             }
-            forecastAdapter.setUpdatedData(response?.daily as ArrayList<DailyItem>)
-        }
-    }
 
+        }
+
+
+    }
 }
+

@@ -8,24 +8,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.weather.R
 import com.example.weather.data.model.ForecastDailyModel
 import com.example.weather.databinding.ForecastFragmentBinding
+import java.util.*
+import android.os.Build
+import android.widget.Toast
+
 
 class ForecastFragment : Fragment() {
-    private lateinit var forecastAdapter: ForecastAdapter
+
     private var _binding: ForecastFragmentBinding? = null
     private val binding get() = _binding!!
     private var daily = mutableListOf<ForecastDailyModel>()
 
-    private val viewModel: CitiesViewModel by activityViewModels()
-
+    private val viewModel: SharedViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,38 +33,37 @@ class ForecastFragment : Fragment() {
 
         _binding = ForecastFragmentBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        viewModel.reset()
+        getLiveData()
+
+        binding.swipeToRefresh.setOnRefreshListener {
+            Log.d("Refresh", "Refreshed")
+            binding.forecastRecyclerView.adapter.let { ForecastAdapter(daily).items.clear() }
+            Toast.makeText(requireContext(), "Refreshed!!", Toast.LENGTH_SHORT).show()
+            viewModel.reset()
+            getLiveData()
+        }
+    }
+
+    private fun getLiveData() {
         viewModel.weatherLiveData.observe(viewLifecycleOwner)
         { response ->
             val coord = response?.coord
             val lat = coord?.lat
             val lon = coord?.lon
+
             viewModel.unitData.observe(viewLifecycleOwner)
             { unitsLiveData ->
                 val unit = unitsLiveData
-                initRecyclerView(view)
                 if (lat != null && lon != null) {
                     getForecastWeather(lat, lon, unit)
                 }
             }
         }
-
-
-    }
-
-    private fun initRecyclerView(view: View) {
-        val forecastRecyclerView = view.findViewById<RecyclerView>(R.id.ForecastRecyclerView)
-        forecastRecyclerView.layoutManager = LinearLayoutManager(activity)
-        val decoration = DividerItemDecoration(activity, DividerItemDecoration.VERTICAL)
-        forecastRecyclerView.addItemDecoration(decoration)
-
-
-        forecastAdapter = ForecastAdapter()
-        forecastRecyclerView.adapter = forecastAdapter
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -76,35 +74,64 @@ class ForecastFragment : Fragment() {
             if (response == null) {
                 Log.d("T", "Network call failed")
             } else {
+                Log.d("T", "Network call success")
                 val maxDays = response?.daily?.lastIndex
                 for (i in 0..maxDays!!) {
-                    if (unit == getString(R.string.metric)) {
-                        unitSymbol = getString(R.string.celsiusSymbol)
-                    } else {
+                    if (unit == getString(R.string.imperial)) {
                         unitSymbol = getString(R.string.fahrenheitSymbol)
+                    } else {
+                        unitSymbol = getString(R.string.celsiusSymbol)
                     }
                     val min = response?.daily?.get(i)?.temp?.min.toString() + unitSymbol
                     val max = response?.daily?.get(i)?.temp?.max.toString() + unitSymbol
 
+                    val sdf =
+                        SimpleDateFormat(getString(R.string.dateFormatForecast), Locale.ENGLISH)
+                    val dt = sdf.format(Date(response?.daily?.get(i)?.dt?.toLong()?.times(1000)!!))
 
-                    val dt1 = response?.daily?.get(i)?.dt
-                    val date = java.time.format.DateTimeFormatter.ISO_INSTANT
-                        .format(java.time.Instant.ofEpochSecond(dt1!!.toLong()))
-                    val parser = SimpleDateFormat(getString(R.string.dateFormatObtained))
-                    val formatter = SimpleDateFormat(getString(R.string.dateFormatForecast))
-                    val output = formatter.format(parser.parse(date))
-                    val dt = output
+                    val diff =
+                        Date().time - Date(response?.current?.dt?.toLong()?.times(1000)!!).time
+                    val update = updatedBefore(diff)
 
                     val iconId = response?.daily?.get(i)?.weather?.get(0)?.icon
 
-                    daily.add(ForecastDailyModel(iconId, min, max, dt))
+                    daily.add(ForecastDailyModel(iconId, min, max, dt, update))
                 }
-                forecastAdapter.setForecastData(daily as ArrayList<ForecastDailyModel>)
+                binding.forecastRecyclerView.adapter = context.let {
+                    ForecastAdapter(daily)
+                }
+                if (binding.swipeToRefresh.isRefreshing == true) {
+                    binding.swipeToRefresh.isRefreshing = false
+                }
             }
-
         }
+    }
 
+    private fun updatedBefore(diff: Long): String {
+        var timeInSeconds = (diff / 1000).toInt()
+        val hours = timeInSeconds / 3600
+        timeInSeconds = timeInSeconds - (hours * 3600)
+        val minutes = timeInSeconds / 60
+        timeInSeconds = timeInSeconds - (minutes * 60)
+        val seconds = timeInSeconds
+        var update: String
+        if (seconds <= 0) {
+            update = getString(R.string.now)
+        } else if (seconds < 60) {
+            update = "$seconds" + getString(R.string.sec) + getString(R.string.ago)
+        } else if (seconds >= 60) {
+            update = "$minutes" + getString(R.string.min) + getString(R.string.ago)
+        } else if (minutes >= 60) {
+            update = "$hours" + getString(R.string.hr) + getString(R.string.ago)
+        } else {
+            update = getString(R.string.day) + getString(R.string.ago)
+        }
+        return update
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
 

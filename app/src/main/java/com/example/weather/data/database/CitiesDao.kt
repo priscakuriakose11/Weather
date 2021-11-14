@@ -10,7 +10,10 @@ import androidx.room.Query
 interface CitiesDao {
     @Insert(onConflict=OnConflictStrategy.REPLACE)
     suspend fun insert(cities:Cities)
-    @Query("SELECT name from Cities")
-     fun display():LiveData<List<Cities>>
 
+    @Query("SELECT name from Cities")
+     fun displayCities():LiveData<List<Cities>>
+
+    @Query("DELETE  from Cities WHERE id=:id")
+     fun delete(id: Int)
 }

@@ -2,10 +2,11 @@ package com.example.weather.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
-import android.os.AsyncTask
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,20 +21,17 @@ import com.bumptech.glide.Glide
 import com.example.weather.R
 import com.example.weather.data.database.Cities
 import com.example.weather.databinding.TodayFragmentBinding
+import com.example.weathersampleapp.data.utils.Constants.Companion.IMAGE_URL
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
-import java.io.IOException
-import java.net.InetSocketAddress
-import java.net.Socket
-import java.text.SimpleDateFormat
 import java.util.*
 
 class TodayFragment() : Fragment() {
     private var _binding: TodayFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CitiesViewModel by activityViewModels()
+    private val viewModel: SharedViewModel by activityViewModels()
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -49,44 +47,35 @@ class TodayFragment() : Fragment() {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        InternetCheck(object : InternetCheck.Consumer {
-            override fun accept(internet: Boolean?) {
-                Log.d("Internet", "$internet")
-                if(internet==false) {
-                    Toast.makeText(requireContext(), "No Internet", Toast.LENGTH_SHORT).show()
-                }
-            }
-        })
-
-        viewModel.readAll.observe(viewLifecycleOwner, {
+//        binding.swipeToRefreshToday.setOnRefreshListener {
+//            Toast.makeText(requireContext(), "Refreshed!!!", Toast.LENGTH_SHORT).show()
+//            binding.swipeToRefreshToday.isRefreshing = false
+//        }
+        if (isOnline() == false) {
+            Toast.makeText(requireContext(), "No Network!!!", Toast.LENGTH_LONG).show()
+            Log.d("Network", "No Network")
+        }
+        //Display all favourite Cities
+        viewModel.getFavoritedCities.observe(viewLifecycleOwner, {
 
             if (it.isNotEmpty()) {
                 val allCities = mutableListOf<String>()
                 for (i in it) {
                     allCities.add(i.name!!)
                 }
-                Log.d("cities", "${it[0]}")
                 val arrayAdapter =
                     ArrayAdapter(requireContext(), R.layout.dropdown_cities, allCities)
                 binding.enterCity.setAdapter(arrayAdapter)
             }
-
         })
-
-
-
 
         viewModel.unitData.observe(viewLifecycleOwner)
         { unitsLiveData ->
-
             val unit = unitsLiveData
 
             viewModel.weatherLiveData.observe(viewLifecycleOwner) { response ->
-                if (response != null) {
-                    binding.place.text = response.name
-                }
+                binding.place.text = response?.name
             }
 
             if (binding.place.text.isEmpty()) {
@@ -102,11 +91,17 @@ class TodayFragment() : Fragment() {
             }
 
             binding.go.setOnClickListener {
-                getToday(binding.enterCity.text.toString(), unit)
+                if (!binding.enterCity.text.isEmpty()) {
+                    getToday(binding.enterCity.text.toString(), unit)
+                } else {
+                    Toast.makeText(requireContext(), "Enter City", Toast.LENGTH_SHORT).show()
+                }
 
             }
         }
+
     }
+
 
     private fun fetchlocation(unit: String) {
 
@@ -141,93 +136,108 @@ class TodayFragment() : Fragment() {
                     binding.place.text = city
                     getToday(city, unit)
 
-
                 } else {
                     Log.d("location", "Null")
                     Toast.makeText(requireContext(), "Set Location", Toast.LENGTH_SHORT).show()
                 }
             }
         }
-
-
     }
-
 
     @SuppressLint("SetTextI18n")
     private fun getToday(city: String, unit: String) {
+        if (binding.favorite.isChecked()) {
+            binding.favorite.setChecked(false)
+        }
         Log.d("getToday", "Success")
         viewModel.getCurrentWeather(city, unit)
         viewModel.weatherLiveData.observe(viewLifecycleOwner)
         { response ->
             if (response == null) {
                 Log.d("Response", "Null")
-                Toast.makeText(requireContext(), "$city is not city!!!", Toast.LENGTH_SHORT).show()
-            }
-            val main = response?.main
-            binding.place.text = response?.name
-            if (unit==getString(R.string.metric)) {
-                binding.temperature.text = main?.temp.toString() + getString(R.string.celsiusSymbol)
-                binding.highTemperature.text = main?.tempMax.toString() + getString(R.string.celsiusSymbol)
-                binding.lowTemperature.text = main?.tempMin.toString()  + getString(R.string.celsiusSymbol)
-            }
-            if (unit==getString(R.string.imperial)) {
-                binding.temperature.text = main?.temp.toString() + getString(R.string.fahrenheitSymbol)
-                binding.highTemperature.text = main?.tempMax.toString() + getString(R.string.fahrenheitSymbol)
-                binding.lowTemperature.text = main?.tempMin.toString()  + getString(R.string.fahrenheitSymbol)
-            }
-            val sdf = SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault())
-            val date = sdf.format(Date()).toString()
-            binding.dateTime.text = date
-            val WeatherItem = response?.weather?.get(0)
-            binding.iconText.text = WeatherItem?.description
-            val iconid = WeatherItem?.icon
+                Toast.makeText(requireContext(), "No Response", Toast.LENGTH_SHORT).show()
+            } else {
+                val main = response?.main
+                binding.place.text = response?.name
+                var unitSymbol: String = getString(R.string.celsiusSymbol)
+                if (unit == getString(R.string.metric)) {
+                    unitSymbol = getString(R.string.celsiusSymbol)
+                }
+                if (unit == getString(R.string.imperial)) {
+                    unitSymbol = getString(R.string.fahrenheitSymbol)
+                }
+                binding.temperature.text = main?.temp.toString() + unitSymbol
+                binding.highTemperature.text = main?.tempMax.toString() + unitSymbol
+                binding.lowTemperature.text = main?.tempMin.toString() + unitSymbol
 
-            val imageUrl = "https://openweathermap.org/img/wn/$iconid@2x.png"
-            Glide.with(this).load(imageUrl)
-                .error(R.drawable.ic_baseline_cloud_circle_24)
-                .into(binding.icon)
-            binding.favorite.setOnClickListener {
-                if (response != null && !binding.place.text.isEmpty()) {
-                    val coord = response?.coord
-                    val cityInfo = Cities(response?.id, response?.name, coord?.lon, coord?.lat)
+                val sdf = android.icu.text.SimpleDateFormat(
+                    getString(R.string.dateFormat),
+                    Locale.ENGLISH
+                )
+                val date = sdf.format(Date(response?.dt?.toLong()?.times(1000)!!))
+//            val sdf = SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault())
+//            val date = sdf.format(Date()).toString()
 
-                    viewModel.addCity(cityInfo)
 
-                    Toast.makeText(requireContext(), "Favorited!!!", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(requireContext(), "Enter Valid City !!!", Toast.LENGTH_SHORT)
-                        .show()
+                binding.dateTime.text = date
+
+                val WeatherItem = response?.weather?.get(0)
+                binding.iconText.text = WeatherItem?.description
+                val iconId = WeatherItem?.icon
+                Glide.with(this).load(IMAGE_URL.format("$iconId"))
+                    .error(R.drawable.ic_baseline_cloud_circle_24)
+                    .into(binding.icon)
+
+                binding.favorite.setOnCheckedChangeListener { checkBox, isChecked ->
+                    if (isChecked) {
+                        if (response != null && !binding.place.text.isEmpty()) {
+                            val coord = response?.coord
+                            val cityInfo =
+                                Cities(response?.id, response?.name, coord?.lon, coord?.lat)
+
+                            viewModel.insert(cityInfo)
+
+                            Toast.makeText(
+                                requireContext(),
+                                "${response?.name} is Favorited",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(requireContext(), "No Response", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                    if (!isChecked) {
+                        if (response != null && !binding.place.text.isEmpty()) {
+                            response.id?.let { viewModel.delete(it) }
+                            Toast.makeText(
+                                requireContext(),
+                                "${response?.name} is Unfavorited",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(requireContext(), "No Response", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                    }
                 }
             }
         }
-
     }
 
-    internal class InternetCheck(private val mConsumer: Consumer) :
-        AsyncTask<Void, Void, Boolean>() {
-        interface Consumer {
-            fun accept(internet: Boolean?)
-        }
-
-        init {
-            execute()
-        }
-
-        override fun doInBackground(vararg voids: Void): Boolean? {
-            try {
-                val sock = Socket()
-                sock.connect(InetSocketAddress("8.8.8.8", 53), 1500)
-                sock.close()
-                return true
-            } catch (e: IOException) {
-                return false
-            }
-
-        }
-
-        override fun onPostExecute(internet: Boolean?) {
-            mConsumer.accept(internet)
-        }
+    private fun isOnline(): Boolean {
+        val connectivityManager =
+            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        var state: Boolean
+        state = capabilities != null
+        return state
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

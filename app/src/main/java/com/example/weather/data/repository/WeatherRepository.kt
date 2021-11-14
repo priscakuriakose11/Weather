@@ -10,12 +10,13 @@ class WeatherRepository {
     suspend fun getCurrentWeather(city: String, unit: String): CurrentWeatherResponse? {
         val request = RetrofitInstance.apiClient.getCurrentWeather(city, unit)
         if (request.failed) {
+            Log.d("Network", "Request Failed")
             return null
         }
         if (!request.isSuccessful) {
+            Log.d("Network", "Request Failed")
             return null
         }
-
         return request.body
     }
 

@@ -4,11 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#6FBADF"
+    android:background="@color/gray"
     tools:context=".ui.ForecastFragment">
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/swipeToRefresh"
+    tools:ignore="MissingConstraints">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/ForecastRecyclerView"
+        android:id="@+id/forecastRecyclerView"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -19,7 +25,7 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
-
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
    

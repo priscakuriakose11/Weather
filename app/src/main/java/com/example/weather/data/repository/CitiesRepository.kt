@@ -7,5 +7,7 @@ import com.example.weather.data.database.CitiesDao
 class CitiesRepository(private val citiesDao:CitiesDao) {
     suspend fun insert(cities:Cities)=citiesDao.insert(cities)
 
-    fun display(): LiveData<List<Cities>> =citiesDao.display()
+    fun displayCities(): LiveData<List<Cities>> =citiesDao.displayCities()
+
+    fun delete(id:Int)=citiesDao.delete(id)
 }

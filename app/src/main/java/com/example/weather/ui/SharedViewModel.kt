@@ -10,19 +10,26 @@ import com.example.weather.data.repository.CitiesRepository
 import com.example.weather.data.repository.SettingsRepository
 import com.example.weather.data.repository.WeatherRepository
 import com.example.weather.data.utils.CurrentWeatherResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CitiesViewModel(application: Application) :AndroidViewModel(application){
+class SharedViewModel(application: Application) :AndroidViewModel(application){
     private val citiesRepository: CitiesRepository
-    var readAll: LiveData<List<Cities>>
+    var getFavoritedCities: LiveData<List<Cities>>
     init {
         val citiesDB= CitiesDatabase.getInstance(application).citiesDao()
         citiesRepository= CitiesRepository(citiesDB)
-        readAll=citiesRepository.display()
+        getFavoritedCities=citiesRepository.displayCities()
     }
-    fun addCity(city: Cities){
-        viewModelScope.launch {
+    fun insert(city: Cities){
+        viewModelScope.launch (Dispatchers.IO){
             citiesRepository.insert(city)
+        }
+    }
+
+    fun delete(id: Int){
+        viewModelScope.launch (Dispatchers.IO){
+            citiesRepository.delete(id)
         }
     }
 
@@ -42,11 +49,15 @@ class CitiesViewModel(application: Application) :AndroidViewModel(application){
     private val _weatherLiveData1 = MutableLiveData<ForecastWeatherResponse?>()
     val forecastWeatherLiveData: LiveData<ForecastWeatherResponse?> = _weatherLiveData1
 
+    fun reset() {
+        _weatherLiveData1.value = null
+    }
+
     fun getForecastWeather(lat: Double, lon: Double ,unit: String) {
         viewModelScope.launch {
             val forecastResponse = repository.getForecastWeather(lat, lon,unit)
             Log.d("ViewModel", "Success")
-            _weatherLiveData1.postValue(forecastResponse)
+            _weatherLiveData1.value= forecastResponse
         }
     }
 
@@ -55,7 +66,7 @@ class CitiesViewModel(application: Application) :AndroidViewModel(application){
 
     val unitData =settingsRepository.unitFlow.asLiveData()
 
-    fun saveCurrentUnit( unit:String)=viewModelScope.launch {
+    fun saveCurrentUnit( unit:String)=viewModelScope.launch (Dispatchers.IO) {
         settingsRepository.saveCurrentUnit(unit)
     }
 }

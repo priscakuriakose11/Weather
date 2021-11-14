@@ -4,16 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#6FBADF"
+    android:background="@color/gray"
     tools:context=".ui.TodayFragment">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:background="@color/purple_200"
-        android:backgroundTint="#6FBADF"
+        android:backgroundTint="@color/app_background"
         android:orientation="horizontal"
         android:weightSum="5"
         app:layout_constraintBottom_toTopOf="@id/place"
@@ -28,8 +27,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="2dp"
             android:layout_weight="3.7"
+            android:layout_marginRight="5dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/favorite"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:textSize="20sp">
 
             <AutoCompleteTextView
@@ -41,34 +44,48 @@
                 android:text="" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/go"
-            android:layout_width="3dp"
-            android:layout_height="61dp"
-            android:layout_marginTop="10dp"
-            android:layout_weight="0.7"
-            android:backgroundTint="#8E24AA"
-            android:text="@string/go" />
-
-        <ImageView
+        <CheckBox
             android:id="@+id/favorite"
             android:layout_width="wrap_content"
-            android:layout_height="58dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="0.3"
-            android:src="@drawable/ic_baseline_favorite_24" />
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_height="wrap_content"
+            android:button="@drawable/selector_favorite_item"
+            android:layout_marginTop="10dp"
+            android:layout_weight="0.4"
+            app:layout_constraintEnd_toStartOf="@+id/go"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <Button
+            android:id="@+id/go"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="0.5"
+            android:backgroundTint="@color/purple_500"
+            android:text="@string/go"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/location"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <ImageView
             android:id="@+id/location"
-            android:layout_width="wrap_content"
-            android:layout_height="59dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="0.3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:layout_weight="0.4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:src="@drawable/ic_baseline_add_location_alt_24" />
 
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/place"
@@ -82,6 +99,7 @@
         app:layout_constraintBottom_toTopOf="@+id/dateTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolBar" />
+
 
     <TextView
         android:id="@+id/dateTime"
@@ -121,13 +139,6 @@
             android:textSize="23sp" />
 
         <TextView
-            android:id="@+id/highTemperatureUnit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="23sp" />
-
-        <TextView
             android:id="@+id/lowTemp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -141,14 +152,6 @@
             android:layout_height="wrap_content"
             android:text=""
             android:textSize="23sp" />
-
-        <TextView
-            android:id="@+id/lowTemperatureUnit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="23sp" />
-
 
     </LinearLayout>
 
@@ -164,16 +167,6 @@
         app:layout_constraintBottom_toTopOf="@+id/iconText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/highLow" />
-
-    <TextView
-        android:id="@+id/temperatureUnit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingBottom="15dp"
-        android:text=""
-        android:textSize="35sp"
-        app:layout_constraintBottom_toTopOf="@+id/iconText"
-        app:layout_constraintStart_toEndOf="@+id/temperature" />
 
     <TextView
         android:id="@+id/iconText"
@@ -198,4 +191,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iconText" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

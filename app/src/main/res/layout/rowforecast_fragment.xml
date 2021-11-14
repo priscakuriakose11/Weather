@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rowRecyclerView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingTop="5dp"
     android:paddingBottom="70dp">
 
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:orientation="vertical">
+        android:layout_marginStart="20dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/iconForecast"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/dateTimeForecast"
@@ -22,13 +28,34 @@
             android:textSize="23sp" />
 
         <LinearLayout
-            android:id="@+id/highLowForecast"
+            android:id="@+id/updateRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:orientation="horizontal"
             android:paddingTop="16dp">
 
+            <TextView
+                android:id="@+id/updateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/updated"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/updateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/highLowForecast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="16dp">
 
             <TextView
                 android:id="@+id/highTempForecast"
@@ -43,18 +70,12 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:textSize="23sp" />
-            <TextView
-                android:id="@+id/highTemperatureForecastUnit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="23sp" />
 
             <TextView
                 android:id="@+id/lowTempForecast"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
+                android:layout_marginLeft="5dp"
                 android:text="@string/low"
                 android:textSize="15sp" />
 
@@ -64,25 +85,18 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:textSize="23sp" />
-            <TextView
-                android:id="@+id/lowTemperatureForecastUnit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="23sp" />
-
 
         </LinearLayout>
 
-
     </LinearLayout>
-
 
     <ImageView
         android:id="@+id/iconForecast"
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_marginStart="20dp"
-        android:src="@drawable/ic_baseline_cloud_circle_24" />
-</LinearLayout>
+        android:layout_width="142dp"
+        android:layout_height="91dp"
+        android:src="@drawable/ic_baseline_cloud_circle_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

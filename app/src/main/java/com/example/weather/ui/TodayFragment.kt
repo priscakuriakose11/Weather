@@ -25,6 +25,7 @@ import com.example.weathersampleapp.data.utils.Constants.Companion.IMAGE_URL
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
+import java.text.SimpleDateFormat
 import java.util.*
 
 class TodayFragment() : Fragment() {
@@ -48,28 +49,21 @@ class TodayFragment() : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        binding.swipeToRefreshToday.setOnRefreshListener {
-//            Toast.makeText(requireContext(), "Refreshed!!!", Toast.LENGTH_SHORT).show()
-//            binding.swipeToRefreshToday.isRefreshing = false
-//        }
+
         if (isOnline() == false) {
             Toast.makeText(requireContext(), "No Network!!!", Toast.LENGTH_LONG).show()
             Log.d("Network", "No Network")
         }
-        //Display all favourite Cities
-        viewModel.getFavoritedCities.observe(viewLifecycleOwner, {
+        getFavoritedCities()
+        getLiveData()
+        binding.swipeToRefreshToday.setOnRefreshListener {
+            Toast.makeText(requireContext(), "Refreshed!!!", Toast.LENGTH_SHORT).show()
+            getLiveData()
+            binding.swipeToRefreshToday.isRefreshing = false
+        }
+    }
 
-            if (it.isNotEmpty()) {
-                val allCities = mutableListOf<String>()
-                for (i in it) {
-                    allCities.add(i.name!!)
-                }
-                val arrayAdapter =
-                    ArrayAdapter(requireContext(), R.layout.dropdown_cities, allCities)
-                binding.enterCity.setAdapter(arrayAdapter)
-            }
-        })
-
+    private fun getLiveData() {
         viewModel.unitData.observe(viewLifecycleOwner)
         { unitsLiveData ->
             val unit = unitsLiveData
@@ -99,12 +93,25 @@ class TodayFragment() : Fragment() {
 
             }
         }
+    }
 
+    private fun getFavoritedCities() {
+        viewModel.getFavoritedCities.observe(viewLifecycleOwner, {
+
+            if (it.isNotEmpty()) {
+                val allCities = mutableListOf<String>()
+                for (i in it) {
+                    allCities.add(i.name!!)
+                }
+                val arrayAdapter =
+                    ArrayAdapter(requireContext(), R.layout.dropdown_cities, allCities)
+                binding.enterCity.setAdapter(arrayAdapter)
+            }
+        })
     }
 
 
     private fun fetchlocation(unit: String) {
-
 
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -170,16 +177,16 @@ class TodayFragment() : Fragment() {
                 binding.highTemperature.text = main?.tempMax.toString() + unitSymbol
                 binding.lowTemperature.text = main?.tempMin.toString() + unitSymbol
 
-                val sdf = android.icu.text.SimpleDateFormat(
-                    getString(R.string.dateFormat),
-                    Locale.ENGLISH
-                )
-                val date = sdf.format(Date(response?.dt?.toLong()?.times(1000)!!))
-//            val sdf = SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault())
-//            val date = sdf.format(Date()).toString()
+//                val sdf = android.icu.text.SimpleDateFormat(
+//                    getString(R.string.dateFormat),
+//                    Locale.ENGLISH
+//                )
+//                val date = sdf.format(Date(response?.dt?.toLong()?.times(1000)!!))
+                val sdf1 = SimpleDateFormat(getString(R.string.dateFormat1), Locale.getDefault())
+                val date1 = sdf1.format(Date()).toString()
 
 
-                binding.dateTime.text = date
+                binding.dateTime.text = date1
 
                 val WeatherItem = response?.weather?.get(0)
                 binding.iconText.text = WeatherItem?.description

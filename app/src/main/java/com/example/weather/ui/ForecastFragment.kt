@@ -44,7 +44,6 @@ class ForecastFragment : Fragment() {
             Log.d("Refresh", "Refreshed")
             binding.forecastRecyclerView.adapter.let { ForecastAdapter(daily).items.clear() }
             Toast.makeText(requireContext(), "Refreshed!!", Toast.LENGTH_SHORT).show()
-            viewModel.reset()
             getLiveData()
         }
     }
@@ -92,6 +91,7 @@ class ForecastFragment : Fragment() {
                     val diff =
                         Date().time - Date(response?.current?.dt?.toLong()?.times(1000)!!).time
                     val update = updatedBefore(diff)
+                    //Log.d("Time","${sdf.format(Date())},$dt")
 
                     val iconId = response?.daily?.get(i)?.weather?.get(0)?.icon
 
@@ -118,13 +118,13 @@ class ForecastFragment : Fragment() {
         if (seconds <= 0) {
             update = getString(R.string.now)
         } else if (seconds < 60) {
-            update = "$seconds" + getString(R.string.sec) + getString(R.string.ago)
+            update = "$seconds" + " " + getString(R.string.sec) + " " + getString(R.string.ago)
         } else if (seconds >= 60) {
-            update = "$minutes" + getString(R.string.min) + getString(R.string.ago)
+            update = "$minutes" + " " + getString(R.string.min) + " " + getString(R.string.ago)
         } else if (minutes >= 60) {
-            update = "$hours" + getString(R.string.hr) + getString(R.string.ago)
+            update = "$hours" + " " + getString(R.string.hr) + " " + getString(R.string.ago)
         } else {
-            update = getString(R.string.day) + getString(R.string.ago)
+            update = getString(R.string.day) + " " + getString(R.string.ago)
         }
         return update
     }
